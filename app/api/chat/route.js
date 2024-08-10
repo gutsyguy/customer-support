@@ -7,7 +7,7 @@ const systemPrompt = `You are a highly knowledgeable and empathetic customer sup
 export async function POST(req){
 
   const filler = "Give advice to an electrical engineering major"
-  const genAI = new GoogleGenerativeAI("AIzaSyDny8YRvIacKK932608QyOTtqke0ECDeA0")
+  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
 
   const model = genAI.getGenerativeModel({model: "gemini-1.5-flash"})
 
