@@ -26,7 +26,8 @@ export default function Home() {
         headers: {
           'Content-Type': "application/json"
         },
-        body: JSON.stringify([...messages, { role: 'user', content: message }])
+        // Adjusting to send a single object with the 'message' field
+        body: JSON.stringify({ message })
       });
 
       const reader = response.body.getReader();
