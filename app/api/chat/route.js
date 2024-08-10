@@ -1,17 +1,25 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 // import Gemini from 'gemini-api'; // Assume this is the correct import for Gemini
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const systemPrompt = `You are a highly knowledgeable and empathetic customer support agent for Headstarter, an AI-powered software interview platform. Your primary goal is to assist users with any issues, questions, or concerns they may have regarding the platform. Provide clear, concise, and helpful responses, ensuring that users feel understood and supported. Always strive to resolve issues efficiently while maintaining a professional and friendly demeanor. You have access to all Headstarter system information, including user accounts, platform features, troubleshooting guides, and known issues. Use this information to provide accurate and timely solutions. When dealing with complex or escalated issues, escalate the ticket to the appropriate team or department while keeping the user informed of the process.`;
+const systemPrompt = `You are a highly knowledgeable, empathetic and AI-powered college mentor for both undergraduate and graduate students. Your primary goal is to assist students with any issues, questions, or concerns they may have regarding the college. Provide clear, concise, and helpful responses, ensuring that users feel understood and supported. Always strive to resolve issues efficiently while maintaining a professional and friendly demeanor The question the student is asking is: `;
 
 export async function POST(req){
+try{
+  const {role, message} = await req.json()
 
-  const filler = "Give advice to an electrical engineering major"
+  if (!message) {
+    return NextResponse.json(
+      { error: "Message is required in the request body." },
+      { status: 400 }
+    );
+  }
+
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
 
   const model = genAI.getGenerativeModel({model: "gemini-1.5-flash"})
 
-  const result = await model.generateContent(filler)
+  const result = await model.generateContent(`${systemPrompt} ${message}`)
 
   const response = await result.response
 
@@ -19,50 +27,9 @@ export async function POST(req){
 
   console.log(text)
 
-  return NextResponse(text)
-
+  return new NextResponse(text)
+} catch (error) {
+  console.error("Error generating content:", error);
+  return NextResponse.json({ error: error.message }, { status: 500 });
+}x
 }
-
-
-// export async function POST(req) {
-//   const gemini = new Gemini({ apiKey: 'AIzaSyDny8YRvIacKK932608QyOTtqke0ECDeA0' }); // Initialize Gemini client with the appropriate API key
-//   const data = await req.json();
-
-//   try {
-//     const completion = await gemini.chat.completions.create({
-//       prompt: systemPrompt, // Adjust the prompt structure to match Gemini's API
-//       messages: data,
-//       model: 'gemini-4', // Replace with the appropriate Gemini model name
-//       stream: true,
-//     });
-
-//     const stream = new ReadableStream({
-//       async start(controller) {
-//         const encoder = new TextEncoder();
-//         try {
-//           for await (const chunk of completion) {
-//             const content = chunk.choices[0]?.delta?.content;
-//             if (content) {
-//               const text = encoder.encode(content);
-//               controller.enqueue(text);
-//             }
-//           }
-//         } catch (err) {
-//           controller.error(err);
-//         } finally {
-//           controller.close();
-//         }
-//       }
-//     });
-
-//     return new NextResponse(stream);
-//   } catch (error) {
-//     if (error.code === 'insufficient_quota') {
-//       return NextResponse.json({
-//         error: 'You exceeded your current quota, please check your plan and billing details.'
-//       }, { status: 429 });
-//     } else {
-//       return NextResponse.json({ error: error.message }, { status: 500 });
-//     }
-//   }
-// }
