@@ -12,7 +12,7 @@ export default function Home() {
   const [message, setMessage] = useState('');
 
   const sendMessage = async () => {
-    if (!message.trim()) return; // Do not send empty messages
+    if (!message.trim()) return;
     setMessage('');
     setMessages((messages) => [
       ...messages,
@@ -26,7 +26,7 @@ export default function Home() {
         headers: {
           'Content-Type': "application/json"
         },
-        // Adjusting to send a single object with the 'message' field
+
         body: JSON.stringify({ message })
       });
 
@@ -53,7 +53,6 @@ export default function Home() {
       });
     } catch (error) {
       console.error("Error sending message:", error);
-      // Handle error, e.g., show notification to the user
     }
   };
 
@@ -62,7 +61,7 @@ export default function Home() {
       const response = await fetch(url, options);
       if (!response.ok) {
         if (response.status === 429 && retries > 0) {
-          await new Promise(res => setTimeout(res, 1000)); // Wait before retrying
+          await new Promise(res => setTimeout(res, 1000)); 
           return fetchWithRetry(url, options, retries - 1);
         } else {
           throw new Error(`HTTP error! status: ${response.status}`);
