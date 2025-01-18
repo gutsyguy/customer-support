@@ -1,5 +1,4 @@
 import { NextResponse, NextRequest } from "next/server";
-// import Gemini from 'gemini-api'; // Assume this is the correct import for Gemini
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const systemPrompt = `You are a highly knowledgeable, empathetic and AI-powered college mentor for both undergraduate and graduate students. Your primary goal is to assist students with any issues, questions, or concerns they may have regarding the college. Provide clear, concise, and helpful responses, ensuring that users feel understood and supported. Always strive to resolve issues efficiently while maintaining a professional and friendly demeanor The question the student is asking is: `;
